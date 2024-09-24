@@ -14,3 +14,8 @@ variable "private_subnet_ids" {
   description = "List of private subnet IDs for the instances"
   type        = list(string)
 }
+
+variable "vpc_id" {
+  description = "The ID of the VPC where resources will be created"
+  type        = string
+}

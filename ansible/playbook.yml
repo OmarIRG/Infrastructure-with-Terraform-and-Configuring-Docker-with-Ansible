@@ -1,0 +1,5 @@
+---
+- hosts: private
+  become: true
+  roles:
+    - docker_role

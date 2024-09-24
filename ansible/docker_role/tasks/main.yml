@@ -1,0 +1,19 @@
+---
+- name: Install Docker on Amazon Linux
+  yum:
+    name: docker
+    state: present
+
+- name: Start and enable Docker
+  service:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Run Nginx container
+  docker_container:
+    name: nginx
+    image: nginx
+    state: started
+    ports:
+      - "80:80"

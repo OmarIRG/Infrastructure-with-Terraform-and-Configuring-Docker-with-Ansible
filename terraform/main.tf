@@ -20,6 +20,7 @@ module "ec2" {
   instance_type      = "t2.micro"
   public_subnet_id   = element(module.subnets.public_subnet_ids, 0)
   private_subnet_ids = module.subnets.private_subnet_ids
+  vpc_id             = var.vpc_id
 }
 
 module "alb" {
