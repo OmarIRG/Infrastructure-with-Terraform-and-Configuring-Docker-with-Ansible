@@ -1,15 +1,26 @@
 ---
-- name: Install Python Docker SDK
+- name: Install Python 3 and pip3
+  yum:
+    name:
+      - python3
+      - python3-pip
+    state: present
+
+- name: Install Docker SDK for Python
   pip:
     name: docker
-    state: present
-    executable: pip3
+    executable: pip3  # Ensure the SDK is installed using Python 3's pip
 
-- name: Start and enable Docker
-  service:
+- name: Install Docker (Amazon Linux 2)
+  yum:
     name: docker
-    enabled: true
+    state: present
+
+- name: Ensure Docker service is started
+  systemd:
+    name: docker
     state: started
+    enabled: true
 
 - name: Run Nginx container
   docker_container:
