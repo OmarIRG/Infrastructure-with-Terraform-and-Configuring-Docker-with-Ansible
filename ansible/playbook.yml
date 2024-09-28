@@ -3,3 +3,5 @@
   become: true
   roles:
     - docker_role
+  vars:
+    ansible_python_interpreter: /usr/bin/python3  # Explicitly force Python 3 for the playbook

@@ -1,20 +1,20 @@
 ---
-- name: Install Python 3 and pip3
-  yum:
-    name:
-      - python3
-      - python3-pip
-    state: present
+- name: Install Python 3 and pip3 using raw (to bypass interpreter issues)
+  raw: sudo yum install -y python3 python3-pip
 
 - name: Install Docker SDK for Python
   pip:
     name: docker
-    executable: pip3  # Ensure the SDK is installed using Python 3's pip
+    executable: pip3
 
-- name: Install Docker (Amazon Linux 2)
-  yum:
-    name: docker
+- name: Downgrade urllib3 to a compatible version (1.26.x)
+  pip:
+    name: urllib3==1.26.6  # Compatible with OpenSSL 1.0.2
+    executable: pip3
     state: present
+
+- name: Install Docker manually using raw (Amazon Linux 2)
+  raw: sudo yum install -y docker
 
 - name: Ensure Docker service is started
   systemd:
