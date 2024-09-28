@@ -1,8 +1,9 @@
 ---
-- name: Install Docker on Amazon Linux
-  yum:
+- name: Install Python Docker SDK
+  pip:
     name: docker
     state: present
+    executable: pip3
 
 - name: Start and enable Docker
   service:

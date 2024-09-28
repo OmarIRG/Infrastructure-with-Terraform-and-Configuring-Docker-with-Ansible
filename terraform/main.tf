@@ -27,3 +27,31 @@ module "alb" {
   source            = "./modules/alb"
   public_subnet_ids = module.subnets.public_subnet_ids
 }
+
+
+# NAT Gateway for private subnet internet access
+resource "aws_eip" "nat" {
+  domain = "vpc"
+}
+
+resource "aws_nat_gateway" "nat" {
+  allocation_id = aws_eip.nat.id
+  subnet_id     = element(module.subnets.public_subnet_ids, 0)
+}
+
+# Route table for private subnets to use the NAT Gateway
+resource "aws_route_table" "private" {
+  vpc_id = module.vpc.vpc_id
+}
+
+resource "aws_route" "private_nat_gateway_route" {
+  route_table_id         = aws_route_table.private.id
+  destination_cidr_block = "0.0.0.0/0"
+  nat_gateway_id         = aws_nat_gateway.nat.id
+}
+
+resource "aws_route_table_association" "private_subnet_assoc" {
+  count          = length(module.subnets.private_subnet_ids)
+  subnet_id      = element(module.subnets.private_subnet_ids, count.index)
+  route_table_id = aws_route_table.private.id
+}
