@@ -97,5 +97,3 @@ The infrastructure is deployed across two availability zones (AZs) using Terrafo
 5. **Automate with CI/CD**:
    - Ensure the CI/CD pipeline is set up to automate Terraform and Ansible runs based on repository changes.
 
-## License:
-This project is licensed under the MIT License. See the LICENSE file for details.
