@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Infrastructure with Terraform and Ansible</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            padding: 20px;
+        }
+        header {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+        }
+        section {
+            margin-top: 20px;
+        }
+        h2 {
+            color: #007bff;
+        }
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Omar Islam Ragab  -----  Infrastructure Automation using Terraform and Ansible</h1>
+    </header>
+
+    <section>
+        <h2>Project Overview</h2>
+        <p>This project automates the provisioning and configuration of infrastructure using Terraform and Ansible. It leverages the GitOps methodology, ensuring that all infrastructure and configuration code is managed through Git, providing an auditable, version-controlled setup.</p>
+    </section>
+
+    <section>
+        <h2>Key Components</h2>
+        <ul>
+            <li><strong>Terraform</strong>: Used to provision cloud infrastructure (servers, networking, etc.)</li>
+            <li><strong>Ansible</strong>: Used for configuring the provisioned servers (e.g., installing Docker)</li>
+            <li><strong>CI/CD Pipeline</strong>: Automates the deployment and configuration process using tools like GitHub Actions, GitLab CI, or Jenkins</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>GitOps Implementation</h2>
+        <p>The project adheres to the GitOps principles:</p>
+        <ol>
+            <li>All infrastructure and configuration code is stored in a Git repository.</li>
+            <li>CI/CD pipelines are used to automatically deploy and configure infrastructure.</li>
+            <li>Any changes to the infrastructure or configuration are managed through Git pull requests and commit histories.</li>
+        </ol>
+    </section>
+
+    <section>
+        <h2>Instructions</h2>
+        <p>Follow these steps to deploy the infrastructure and configure the servers:</p>
+        <ol>
+            <li>Clone the repository.</li>
+            <li>Run <code>terraform apply</code> to provision the infrastructure.</li>
+            <li>Use the generated Ansible inventory file to run the playbook on the bastion host.</li>
+            <li>The pipeline will automatically handle further deployments.</li>
+        </ol>
+    </section>
+
+    <footer>
+        <p>&copy; 2024 Infrastructure Automation Project</p>
+    </footer>
+</body>
+</html>

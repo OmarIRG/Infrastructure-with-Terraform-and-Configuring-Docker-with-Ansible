@@ -22,6 +22,12 @@
     state: started
     enabled: true
 
+
+- name: Copy index.html to remote server
+  copy:
+    src: ../../index.html  # This is the path on your local machine
+    dest: /tmp/index.html  # This is where it will be copied on the remote server
+
 - name: Run Nginx container
   docker_container:
     name: nginx
@@ -29,3 +35,5 @@
     state: started
     ports:
       - "80:80"
+    volumes:
+    - /tmp/:/usr/share/nginx/html/:ro
