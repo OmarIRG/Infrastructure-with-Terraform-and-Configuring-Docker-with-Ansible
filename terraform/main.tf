@@ -1,9 +1,9 @@
+
 module "vpc" {
   source    = "./modules/vpc"
   cidr_block = "10.0.0.0/16"
   vpc_name   = "my-vpc"
   public_subnet_ids = module.subnets.public_subnet_ids
-
 }
 
 module "subnets" {
@@ -15,43 +15,21 @@ module "subnets" {
 }
 
 module "ec2" {
-  source             = "./modules/ec2"          # Amazon Linux 2 AMI ID for eu-west-1 (Free Tier eligible)
-  ami                = "ami-0c3a915e3f3aa0e0d"  # ami-00399ec92321828f5
-  instance_type      = "t2.micro"
-  public_subnet_id   = element(module.subnets.public_subnet_ids, 0)
+  source             = "./modules/ec2"
+  vpc_id             = module.vpc.vpc_id
+  public_subnet_id   = module.subnets.public_subnet_ids[0]  # Select the first public subnet for EC2
   private_subnet_ids = module.subnets.private_subnet_ids
-  vpc_id               = module.vpc.vpc_id
+
+  # Required variables for the EC2 module
+  ami               = var.ami               # Add the AMI you want to use for EC2 instances
+  instance_type     = var.instance_type     # Define the EC2 instance type (e.g., t2.micro)
 }
 
 module "alb" {
-  source            = "./modules/alb"
-  public_subnet_ids = module.subnets.public_subnet_ids
-}
-
-
-# NAT Gateway for private subnet internet access
-resource "aws_eip" "nat" {
-  domain = "vpc"
-}
-
-resource "aws_nat_gateway" "nat" {
-  allocation_id = aws_eip.nat.id
-  subnet_id     = element(module.subnets.public_subnet_ids, 0)
-}
-
-# Route table for private subnets to use the NAT Gateway
-resource "aws_route_table" "private" {
+  source = "./modules/alb"  # Correct path to the ALB module inside the 'modules' directory
   vpc_id = module.vpc.vpc_id
-}
-
-resource "aws_route" "private_nat_gateway_route" {
-  route_table_id         = aws_route_table.private.id
-  destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id         = aws_nat_gateway.nat.id
-}
-
-resource "aws_route_table_association" "private_subnet_assoc" {
-  count          = length(module.subnets.private_subnet_ids)
-  subnet_id      = element(module.subnets.private_subnet_ids, count.index)
-  route_table_id = aws_route_table.private.id
+  public_subnet_ids = module.subnets.public_subnet_ids
+  private_instance_ids = module.ec2.private_instance_ids
+  private_instance_ips = module.ec2.private_instance_ips
+  web_server_port = var.web_server_port
 }

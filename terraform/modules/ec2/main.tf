@@ -47,6 +47,14 @@ resource "aws_security_group" "private_sg" {
     security_groups = [aws_security_group.bastion_sg.id]
   }
 
+  # Allow HTTP (port 80) traffic from the load balancer or from within the VPC
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["10.0.0.0/16"]  # Adjust this to your VPC CIDR block
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
