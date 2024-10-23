@@ -25,13 +25,9 @@ jobs:
         echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
         echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
 
-    - name: Create User and Write Public Key
+    - name: Create Public Key
       run: |
-        sudo useradd -m omar  # Create a user named 'omar'
-        sudo mkdir -p /home/omar/.ssh  # Create the .ssh directory
-        echo "${{ secrets.BASTION_PUBLIC_KEY }}" | sudo tee /home/omar/.ssh/bastion.pub  # Write the public key to the user's .ssh directory
-        sudo chown omar:omar /home/omar/.ssh/bastion.pub  # Change ownership to 'omar'
-        sudo chmod 600 /home/omar/.ssh/bastion.pub  # Set proper permissions
+        echo "${{ secrets.BASTION_PUBLIC_KEY }}" > ./bastion.pub  # Write the public key to the working directory
 
     - name: Terraform Init  
       run: |
@@ -42,7 +38,7 @@ jobs:
       id: apply
       run: |
         cd terraform
-        terraform apply -auto-approve
+        terraform apply -auto-approve -var "bastion_public_key=${{ secrets.BASTION_PUBLIC_KEY }}"
 
   ansible:
     needs: terraform  # This job will run after the 'terraform' job
