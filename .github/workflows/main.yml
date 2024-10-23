@@ -36,13 +36,13 @@ jobs:
     - name: Terraform Init  
       run: |
         cd terraform
-        sudo -u omar terraform init
+        terraform init
 
     - name: Terraform Apply
       id: apply
       run: |
         cd terraform
-        sudo -u omar terraform apply -auto-approve
+        terraform apply -auto-approve
 
   ansible:
     needs: terraform  # This job will run after the 'terraform' job
