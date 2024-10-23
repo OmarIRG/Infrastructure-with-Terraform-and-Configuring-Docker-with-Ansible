@@ -44,17 +44,11 @@ jobs:
         cd terraform
         terraform plan -out=tfplan
 
-    - name: Terraform Apply First Part
-      id: apply_first
+    - name: Terraform Apply
+      id: apply
       run: |
         cd terraform
-        terraform apply -auto-approve -target=module.your_module_containing_private_instances  # Adjust this to your specific module
-  
-    - name: Terraform Apply Second Part
-      id: apply_second
-      run: |
-        cd terraform
-        terraform apply -auto-approve
+        terraform apply -auto-approve tfplan
 
   ansible:
     needs: terraform  # This job will run after the 'terraform' job
