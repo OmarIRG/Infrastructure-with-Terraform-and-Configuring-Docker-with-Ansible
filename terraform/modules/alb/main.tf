@@ -37,10 +37,9 @@ resource "aws_lb_target_group" "tg" {
 }
 
 resource "aws_lb_target_group_attachment" "tg_attachment" {
-  count = length(var.private_instance_ids)
-
+  for_each = toset(var.private_instance_ids)
   target_group_arn = aws_lb_target_group.tg.arn
-  target_id        = var.private_instance_ids[count.index]
+  target_id        = each.key
   port             = var.web_server_port
 }
 
