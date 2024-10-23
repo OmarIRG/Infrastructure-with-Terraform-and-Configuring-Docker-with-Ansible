@@ -1,0 +1,55 @@
+name: Terraform and Ansible Workflow
+
+on:
+  push:
+    branches:
+      - master  # Run the workflow on push to the master branch
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0  # Specify your Terraform version here
+
+    - name: Configure AWS Credentials
+      run: |
+        echo "[default]" > ~/.aws/credentials
+        echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+        echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+
+    - name: Terraform Init
+      run: terraform init
+
+    - name: Terraform Apply
+      id: apply
+      run: terraform apply -auto-approve
+
+  ansible:
+    needs: terraform  # This job will run after the 'terraform' job
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Install Ansible
+      run: |
+        sudo apt update
+        sudo apt install ansible -y
+
+    - name: Add SSH Key
+      uses: webfactory/ssh-agent@v0.5.3
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Run Ansible Playbook
+      run: ansible-playbook -i inventory playbook.yml
+      env:
+        ANSIBLE_HOST_KEY_CHECKING: "false"
