@@ -10,65 +10,63 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v2
-      with:
-        terraform_version: 1.5.0  # Specify your Terraform version here
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0  # Specify your Terraform version here
 
-    - name: Configure AWS Credentials
-      run: |
-        mkdir -p ~/.aws  # Create the .aws directory if it doesn't exist
-        echo "[default]" > ~/.aws/credentials
-        echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
-        echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
+      - name: Configure AWS Credentials
+        run: |
+          mkdir -p ~/.aws  # Create the .aws directory if it doesn't exist
+          echo "[default]" > ~/.aws/credentials
+          echo "aws_access_key_id = ${{ secrets.AWS_ACCESS_KEY_ID }}" >> ~/.aws/credentials
+          echo "aws_secret_access_key = ${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> ~/.aws/credentials
 
-    - name: Create User and Write Public Key
-      run: |
-        sudo useradd -m omar  # Create a user named 'omar'
-        sudo mkdir -p /home/omar/.ssh  # Create the .ssh directory
-        echo "${{ secrets.BASTION_PUBLIC_KEY }}" | sudo tee /home/omar/.ssh/bastion.pub  # Write the public key to the user's .ssh directory
-        sudo chown omar:omar /home/omar/.ssh/bastion.pub  # Change ownership to 'omar'
-        sudo chmod 644 /home/omar/.ssh/bastion.pub  # Set proper permissions (readable by others)
+      - name: Create User and Write Public Key
+        run: |
+          sudo useradd -m omar  # Create a user named 'omar'
+          sudo mkdir -p /home/omar/.ssh  # Create the .ssh directory
+          echo "${{ secrets.BASTION_PUBLIC_KEY }}" | sudo tee /home/omar/.ssh/bastion.pub  # Write the public key to the user's .ssh directory
+          sudo chown omar:omar /home/omar/.ssh/bastion.pub  # Change ownership to 'omar'
+          sudo chmod 600 /home/omar/.ssh/bastion.pub  # Set proper permissions
 
-    - name: Terraform Init  
-      run: |
-        cd terraform
-        terraform init
+      - name: Terraform Init  
+        run: |
+          cd terraform
+          terraform init
 
-    - name: Terraform Plan
-      id: plan
-      run: |
-        cd terraform
-        terraform plan -out=tfplan
+      - name: Terraform Apply Instances
+        run: |
+          cd terraform
+          terraform apply -target=aws_instance.my_instance -auto-approve  # Target your instance resource
 
-    - name: Terraform Apply
-      id: apply
-      run: |
-        cd terraform
-        terraform apply -auto-approve tfplan
+      - name: Terraform Apply Remaining Resources
+        run: |
+          cd terraform
+          terraform apply -auto-approve  # Apply the remaining resources
 
   ansible:
     needs: terraform  # This job will run after the 'terraform' job
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Install Ansible
-      run: |
-        sudo apt update
-        sudo apt install ansible -y
+      - name: Install Ansible
+        run: |
+          sudo apt update
+          sudo apt install ansible -y
 
-    - name: Add SSH Key
-      uses: webfactory/ssh-agent@v0.5.3
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Add SSH Key
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-    - name: Run Ansible Playbook
-      run: ansible-playbook -i inventory playbook.yml
-      env:
-        ANSIBLE_HOST_KEY_CHECKING: "false"
+      - name: Run Ansible Playbook
+        run: ansible-playbook -i inventory playbook.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: "false"
