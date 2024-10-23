@@ -70,7 +70,7 @@ jobs:
 
     - name: Run Ansible Playbook
       run: |
-          df ansible
+          cd ansible
           ansible-playbook -i inventory playbook.yml
       env:
         ANSIBLE_HOST_KEY_CHECKING: "false"
