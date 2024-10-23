@@ -57,14 +57,15 @@ resource "aws_lb_target_group" "tg" {
   target_type = "instance"
 
   health_check {
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    timeout             = 5
-    interval            = 30
-    path                = "/health"  # Adjust this to your health check path
-    protocol            = "HTTP"
-    port                = var.web_server_port
+  healthy_threshold   = 2
+  unhealthy_threshold = 2
+  timeout             = 10  # Increase if necessary
+  interval            = 30
+  path                = "/health"
+  protocol            = "HTTP"
+  port                = var.web_server_port
   }
+
 }
 
 resource "aws_lb_target_group_attachment" "tg_attachment" {
