@@ -32,6 +32,7 @@ jobs:
           echo "${{ secrets.BASTION_PUBLIC_KEY }}" | sudo tee /home/omar/.ssh/bastion.pub  # Write the public key to the user's .ssh directory
           sudo chown omar:omar /home/omar/.ssh/bastion.pub  # Change ownership to 'omar'
           sudo chmod 600 /home/omar/.ssh/bastion.pub  # Set proper permissions (readable only by the owner)
+          sudo chmod 700 /home/omar/.ssh  # Ensure .ssh directory is only accessible by 'omar'
 
       - name: Terraform Init  
         run: |
