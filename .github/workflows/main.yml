@@ -38,11 +38,17 @@ jobs:
         cd terraform
         terraform init
 
+    - name: Terraform Plan
+      id: plan
+      run: |
+        cd terraform
+        terraform plan -out=tfplan
+
     - name: Terraform Apply
       id: apply
       run: |
         cd terraform
-        terraform apply -auto-approve
+        terraform apply -auto-approve tfplan
 
   ansible:
     needs: terraform  # This job will run after the 'terraform' job
